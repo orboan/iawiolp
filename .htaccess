@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "iaw.io zona restringida. Identifica't:"
+AuthUserFile /etc/httpd/.htpasswd
+Require valid-user
