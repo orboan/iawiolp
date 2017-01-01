@@ -5,21 +5,44 @@ if(isset($_GET['thanks'])){
 $message = $_GET['thanks'];
 }			
 if(isset($_POST['email'])){
-    $to = "orboan@gmail.com"; // this is your Email address
-    $from = $_POST['email']; // this is the sender's Email address
-    $name = $_POST['name'];
-    $subject = "Form submission";
-    $subject2 = "Copy of your form submission";
-    $message = $name . " wrote the following:" . "\n\n" . $_POST['message'];
-    $message2 = "Here is a copy of your message " . $name . "\n\n" . $_POST['message'];
+    require 'lib/phpMailer/PHPMailerAutoload.php';
+    $mail = new PHPMailer;
 
-    $headers = "From:" . $from;
-    $headers2 = "From:" . $to;
-    mail($to,$subject,$message,$headers);
-    mail($from,$subject2,$message2,$headers2); // sends a copy of the message to the sender
-   	$message = "Mail enviat, ".  $name;
-    header("Location: ?thanks=$message#contact"); 
+    $mail->isSMTP();
+    $mail->Host = 'smtp.gmail.com';
+    $mail->SMTPAuth = true;
+    $mail->Username = 'iaw.xtec@gmail.com';
+    $mail->Password = '12345iaw';
+    $mail->SMTPSecure = 'tls';
+    
+    $mail->SetFrom($_POST['email'], $_POST['name']);
+    $mail->AddReplyTo($_POST['email'], $_POST['name']);
+    $mail->addAddress('info@iaw.io');
+
+    $mail->isHTML(true);
+
+    $name = $_POST['name'];
+    $message = $name . " wrote the following:" . "\n\n" . $_POST['message'];
+    $message2 = "Copia del missatge enviat, " . $name . ":\n\n" . $_POST['message'];
+
+    $mail->Subject = "Form submission from iaw.io";
+    $mail->Body    = $message;
+
+    if(!$mail->send()) {
+        $message = "Error: Mail no enviat... ";
+        //echo 'Mailer Error: ' . $mail->ErrorInfo;
+    } else {
+        $mail->Subject = "Missatge enviat des de iaw.io";
+        $mail->Body    = $message2;
+        $mail->ClearAllRecipients();
+        $mail->addAddress($_POST['email']);
+        $mail->addCustomHeader("BCC: orboan@gmail.com");        
+        $mail->isHTML(true);
+        $mail->send();
+        $message = "Mail enviat, ".  $name;
+        header("Location: ?thanks=$message#contact");
     }
+}
 ?>
 
 <!DOCTYPE HTML>
@@ -27,7 +50,7 @@ if(isset($_POST['email'])){
 	Big Picture by HTML5 UP
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
-	Modified and adapted by orboan.com
+	Modified and adapted by Oriol Boix Anfosso <dev@orboan.com>
 -->
 <html>
 	<head>
