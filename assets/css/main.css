@@ -2295,7 +2295,7 @@
 		padding-bottom: 0;
 		background-color: #9fc99c;
 	}
-	#contact .content {
+	#contact .content, #work .content {
 		margin-top: -25px;
 	}
 
