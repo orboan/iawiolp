@@ -1,0 +1,198 @@
+<html>
+<head>
+<title>iaw.io</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+<link rel="stylesheet" href="assets/css/main.css" />
+<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+<link rel="stylesheet" href="assets/fontcustom/fontcustom.css" />
+<style>
+html, body {
+height: 100%;
+background-color: #E3D6C7;
+}
+ul.menu{
+   margin-top: 33px !important;
+}
+</style>
+</head>
+<body>
+<!-- Header -->
+<header id="header">
+<a href="http://iaw.io"><h1 style="cursor:pointer">Inici</h1></a>
+<nav>
+<ul>
+<li><a href="http://iaw.io/#intro">Programació</a></li>
+<li><a href="http://iaw.io/#one">Activitats E.A.</a></li>
+<li><a href="http://iaw.io/#work">docker iaw.io</a></li>
+<li><a href="http://iaw.io/#contact">Contacte</a></li>
+</ul>
+</nav>
+</header>
+<div style="margin: 20px;">
+<h2>docker-compose.yml usat per a la implantaci&oacute; d'iaw.io</h2>
+<h4>Pots descarregar-te aquest fitxer visitant <a href="https://github.com/orboan/iawiodc" target="_blank" style="text-decoration:underline;">github</a></h4>
+<pre style="background-color: whitesmoke; margin-top: 20px;">
+version: '2'
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    environment:
+      DEFAULT_HOST: iaw.io
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+  mysql:
+    image: orboan/dcsss-mariadb
+    container_name: mariadb
+    hostname: mysql
+    environment:
+      SHELLINABOX_PORT: 9105
+      MYSQL_ROOT_PASSWORD: your_password
+      MYSQL_DATABASE1: wordpress
+      MYSQL_USER1: wp_user
+      MYSQL_PASSWORD1: your_password
+      MYSQL_DATABASE2: moodle
+      MYSQL_USER2: vle_user
+      MYSQL_PASSWORD2: your_password
+      MYSQL_DATABASE3: phpmyadmin
+      MYSQL_USER3: pmauser
+      MYSQL_PASSWORD3: your_password
+      PASSWORD: your_password
+    ports:
+     - "3306:3306"
+     - "2225:22"
+     - "9105:4200"
+     - "9005:9001"
+    volumes:
+      - ~/data/db:/var/lib/mysql
+  wp:
+    depends_on:
+      - mysql
+    image: orboan/dcsss-httpd-wordpress
+    container_name: wordpress
+    hostname: webserver1
+    environment:
+      SHELLINABOX_PORT: 9101
+      VIRTUAL_HOST: programacio.iaw.io
+      VIRTUAL_PORT: 80
+      WP_URL: http://programacio.iaw.io
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: your_password
+      PASSWORD: your_password
+    expose:
+     - "80"
+    ports:
+     - "2221:22"
+     - "9101:4200"
+     - "9001:9001"
+    links:
+     - "mysql:mysql"
+  vle:
+    depends_on:
+      - mysql
+    image: orboan/dcsss-httpd-moodle
+    container_name: moodle
+    hostname: webserver2
+    environment:
+      SHELLINABOX_PORT: 9102
+      VIRTUAL_HOST: vle.iaw.io
+      VIRTUAL_PORT: 80
+      MYSQL_DATABASE: moodle
+      MYSQL_USER: vle_user
+      MYSQL_PASSWORD: your_password
+      MOODLE_URL: http://vle.iaw.io
+      MOODLE_DATADIR: /var/www/moodledata
+      PASSWORD: your_password
+    expose:
+     - "80"
+    ports:
+     - "2222:22"
+     - "9102:4200"
+     - "9002:9001"
+    links:
+     - "mysql:mysql"
+  landing:
+    image: orboan/dcsss-httpd-php
+    container_name: landing-page
+    hostname: webserver4
+    environment:
+      SHELLINABOX_PORT: 9104
+      VIRTUAL_HOST: iaw.io
+      VIRTUAL_PORT: 80
+      PASSWORD: your_password
+    expose:
+     - "80"
+    ports:
+     - "2224:22"
+     - "9104:4200"
+     - "9004:9001"
+    volumes:
+     - ~/data:/data
+  myadmin:
+    depends_on:
+     - mysql
+    image: orboan/dcsss-httpd-phpmyadmin
+    container_name: phpmyadmin
+    hostname: webserver3
+    environment:
+      SHELLINABOX_PORT: 9103
+      VIRTUAL_HOST: myadmin.iaw.io
+      VIRTUAL_PORT: 80
+      MYSQL_DATABASE: phpmyadmin
+      MYSQL_USER: pmauser
+      MYSQL_PASSWORD: your_password
+      MYSQL_ROOT_PASSWORD: your_password
+      PASSWORD: your_password
+    expose:
+     - "80"
+    ports:
+     - "2223:22"
+     - "9103:4200"
+     - "9003:9001"
+    links:
+     - "mysql:mysql"
+  dockerui:
+    image: uifd/ui-for-docker
+    container_name: docker-ui
+    hostname: docker-ui
+    ports:
+     - "9090:9000"
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
+</pre>
+</div>
+<!-- Footer -->
+                        <footer id="footer">
+
+                                <!-- Icons -->
+                                        <ul class="actions">
+                                                <li><a href="https://uk.linkedin.com/in/orboan" target="_blank"
+                                                        class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
+                                                <li><a href="https://github.com/orboan"  target="_blank"
+                                                        class="icon fa-github"><span class="label">Github</span></a></li>
+                                                <li><a href="https://hub.docker.com/u/orboan/" target="_blank"
+                                                        class="icon fa-docker"><span class="label">Docker Hub</span></a></li>
+ <li><a href="https://www.youtube.com/channel/UCcR3ROWkYWG4LeEGdSe_P9w/playlists"
+                                                        target="_blank" class="icon fa-youtube"><span class="label">Youtube</span></a></li>
+                                                <li><a href="http://orboan.com" target="_blank"
+                                                        class="icon fa-external-link"><span class="label">orboan.com</span></a></li>
+                                        </ul>
+
+                                <!-- Menu -->
+                                        <ul class="menu">
+                                                <li>&copy; <a href="http://orboan.com" target="_blank">orboan.com</a>&nbsp;2017</li>
+                                        </ul>
+
+                        </footer>
+
+</body>
+</html>
+

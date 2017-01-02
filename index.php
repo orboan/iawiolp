@@ -84,9 +84,9 @@ if(isset($_POST['email'])){
 					<header>
 						<h2>Implantació d'Aplicacions Web</h2>
 					</header>
-					<p><a class="abutton" href="http://iaw.io/programacio">Programació</a></p>
+					<p><a class="abutton" href="http://programacio.iaw.io/">Programació</a></p>
 					<p> Autor: <a href="https://uk.linkedin.com/in/orboan" target="_blank">Oriol Boix Anfosso</a> | 
-					&copy;&nbsp;<a href="http://iaw.io/license">Tots&nbsp;els&nbsp;drets&nbsp;reservats</a></p>
+					&copy;&nbsp;<a href="http://iaw.io/license.html">Tots&nbsp;els&nbsp;drets&nbsp;reservats</a></p>
 					<footer>
 						<a href="#one" class="button style2 down">More</a>
 					</footer>
@@ -202,7 +202,7 @@ if(isset($_POST['email'])){
 								</a>								
 							</article>
 							<article class="from-right" style="min-height: 200px;">
-								<a href="http://iaw.io/compose.html" class="image fit">
+								<a href="http://iaw.io/docker-compose.html" class="image fit">
 									<div>
 										<img src="images/compose.png" title="Supervisor" alt="" />
 										<p>docker-compose.yml</p>
